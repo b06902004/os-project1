@@ -39,6 +39,7 @@ void read_input(void)
     assert(procs != NULL);
     for (int i = 0; i < num_proc; ++i) {
         scanf("%s %d %d", procs[i].name, &procs[i].ready_time, &procs[i].execution_time);
+        procs[i].pid = -1;
     }
 }
 

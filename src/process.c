@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sched.h>
+#include <time.h>
 #include "process.h"
 #include "schedule.h"
 
@@ -25,9 +26,19 @@ pid_t process_create(struct process proc)
     printf("%s %d\n", proc.name, proc.pid);
 
     // TODO: show the start time via printk
+
+    struct timespec start;
+    clock_gettime(CLOCK_REALTIME, &start);
+
     for (int i = 0; i < proc.execution_time; ++i) {
         UNIT_OF_TIME();
     }
+
+    struct timespec finish;
+    clock_gettime(CLOCK_REALTIME, &finish);
+
+    fprintf(stderr, "[project1] %d %ld.%ld %ld.%ld\n", proc.pid, start.tv_sec, start.tv_nsec,
+            finish.tv_sec, finish.tv_nsec);
     // TODO: show the finish time via printk
 
     exit(0);

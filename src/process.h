@@ -10,6 +10,7 @@ struct process {
     int ready_time;
     int execution_time;
 
+    // Initialized to -1, meaning that this process has not been executed
     pid_t pid;
 };
 

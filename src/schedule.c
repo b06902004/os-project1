@@ -30,6 +30,15 @@ int get_highest_priority_process(int policy, int num_proc, struct process *procs
 
     // TODO
     if (policy == FIFO) {
+        int min = INT_MAX;
+        for (int i = 0; i < num_proc; ++i) {
+            if (procs[i].pid == -1 || procs[i].execution_time == 0)
+                continue;
+            if (procs[i].ready_time < min) {
+                min = procs[i].ready_time;
+                ret = i;
+            }
+        }
     }
     else if (policy == SJF) {
     }
@@ -41,12 +50,20 @@ int get_highest_priority_process(int policy, int num_proc, struct process *procs
     return ret;
 }
 
+/*
+int cmp(const void *a, const void *b)
+{
+    return ((const struct process *)a)->ready_time - ((const struct process *)b)->ready_time;
+}
+*/
+
 void schedule(int policy, int num_proc, struct process *procs)
 {
     int running = -1;
     int now = 0;
 
-    // Assign the scheduler to PARENT_CPU
+//    qsort(procs, num_proc, sizeof(struct process), cmp);
+
     cpu_assign(getpid(), PARENT_CPU);
 
     while (1) {
@@ -80,6 +97,7 @@ void schedule(int policy, int num_proc, struct process *procs)
         // Pass one unit of time
         if (running != -1)
             --procs[running].execution_time;
+        fprintf(stderr, "running = %d\n", running);
         UNIT_OF_TIME();
         ++now;
     }
