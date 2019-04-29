@@ -1,8 +1,28 @@
 #define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <limits.h>
+#include <sched.h>
+#include <assert.h>
 #include "schedule.h"
 #include "process.h"
+
+void cpu_assign(pid_t pid, int cpu)
+{
+    assert(cpu == PARENT_CPU || cpu == CHILD_CPU);
+
+    cpu_set_t mask;
+
+    CPU_ZERO(&mask);
+    CPU_SET(cpu, &mask);
+
+    if (sched_setaffinity(pid, sizeof(cpu_set_t), &mask) < 0) {
+        perror("sched_setaffinity");
+        exit(1);
+    }
+}
 
 int get_highest_priority_process(int policy, int num_proc, struct process *procs, int now)
 {
@@ -25,6 +45,9 @@ void schedule(int policy, int num_proc, struct process *procs)
 {
     int running = -1;
     int now = 0;
+
+    // Assign the scheduler to PARENT_CPU
+    cpu_assign(getpid(), PARENT_CPU);
 
     while (1) {
         // When every task's execution time = 0, break the for-loop

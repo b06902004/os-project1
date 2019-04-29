@@ -17,6 +17,9 @@ pid_t process_create(struct process proc)
     else if (pid != 0) {  // parent
         return pid;
     }
+    // Assign the child process to CPU_CHILD
+    cpu_assign(getpid(), CHILD_CPU);
+
 
     proc.pid = getpid();
     printf("%s %d\n", proc.name, proc.pid);
@@ -34,7 +37,11 @@ void process_sleep(struct process proc)
 {
     struct sched_param param;
     param.sched_priority = 0;
-    sched_setscheduler(proc.pid, SCHED_IDLE, &param);
+    if (sched_setscheduler(proc.pid, SCHED_IDLE, &param) < 0) {
+        perror("sched_setscheduler");
+        exit(1);
+    }
+
 }
 
 void process_run(struct process proc)
