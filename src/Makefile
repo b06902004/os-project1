@@ -1,14 +1,15 @@
+FLAG=-std=c99 -DDEBUG
 main.out: main.o schedule.o process.o Makefile
-	gcc -std=c99 main.o schedule.o process.o -o main.out
+	gcc ${FLAG} main.o schedule.o process.o -o main.out
 
 main.o: main.c schedule.h process.h Makefile
-	gcc -std=c99 -c main.c
+	gcc ${FLAG} -c main.c
 
 schedule.o: schedule.c schedule.h process.h Makefile
-	gcc -std=c99 -c schedule.c
+	gcc ${FLAG} -c schedule.c
 
 process.o: process.c schedule.h process.h Makefile
-	gcc -std=c99 -c process.c
+	gcc ${FLAG} -c process.c
 
 .PHONY=run
 run:

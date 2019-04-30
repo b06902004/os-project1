@@ -3,10 +3,7 @@
 #include "process.h"
 
 enum Policy {
-    FIFO = 0,
-    RR,
-    SJF,
-    PSJF,
+    FIFO = 0, RR, SJF, PSJF,
 };
 
 #define UNIT_OF_TIME()                      \
