@@ -102,9 +102,6 @@ void schedule(int policy, int num_proc, struct process *procs)
          * finished, discontinue the scheduler
          */
         if (running != -1 && procs[running].execution_time == 0) {
-#ifdef DEBUG
-            fprintf(stderr, "%s finishes at time %d\n", procs[running].name, now);
-#endif
             waitpid(procs[running].pid, NULL, 0);
             running = -1;
             if (++num_finish == num_proc)
@@ -114,9 +111,6 @@ void schedule(int policy, int num_proc, struct process *procs)
         // Create those processes which are ready now
         for (int i = 0; i < num_proc; ++i) {
             if (procs[i].ready_time == now) {
-#ifdef DEBUG
-                fprintf(stderr, "%s is created at time %d\n", procs[i].name, now);
-#endif
                 procs[i].pid = process_create(procs[i]);
                 process_sleep(procs[i]);
             }

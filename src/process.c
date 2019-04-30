@@ -4,8 +4,11 @@
 #include <unistd.h>
 #include <sched.h>
 #include <time.h>
+#include <sys/syscall.h>
 #include "process.h"
 #include "schedule.h"
+#define PRINTK 548
+#define GET_NSTIME 549
 
 pid_t process_create(struct process proc)
 {
@@ -21,22 +24,30 @@ pid_t process_create(struct process proc)
     // Assign the child process to CPU_CHILD
     cpu_assign(getpid(), CHILD_CPU);
 
-
     proc.pid = getpid();
     printf("%s %d\n", proc.name, proc.pid);
 
-    // TODO: show the start time via printk
+    // Record the start time
     struct timespec start;
-    clock_gettime(CLOCK_REALTIME, &start);
+    syscall(GET_NSTIME, &start);
+    /* clock_gettime(CLOCK_REALTIME, &start); */
 
     for (int i = 0; i < proc.execution_time; ++i) {
         UNIT_OF_TIME();
-        //fprintf(stderr, "process %s is running ...\n", proc.name);
     }
 
-    // TODO: show the finish time via printk
+    // Record the finish time
     struct timespec finish;
-    clock_gettime(CLOCK_REALTIME, &finish);
+    syscall(GET_NSTIME, &finish);
+    /* clock_gettime(CLOCK_REALTIME, &finish); */
+
+    // Show the information
+    char buf[1024] = {};
+    sprintf(buf, "[project1] %d %ld.%.9ld %ld.%.9ld\n", proc.pid, start.tv_sec, start.tv_nsec,
+            finish.tv_sec, finish.tv_nsec);
+    syscall(PRINTK, buf);
+    /* printf("[project1] %d %ld.%.9ld %ld.%.9ld\n", proc.pid, start.tv_sec, start.tv_nsec,
+            finish.tv_sec, finish.tv_nsec); */
 
     exit(0);
 }
